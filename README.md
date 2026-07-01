@@ -11,11 +11,10 @@ int
 ## Directory Structure
 
 ```
-mod-empire-upkeep/
+mods/empire-upkeep/
+├── Cargo.toml        # Static Bevy Plugin crate
 ├── mod.toml          # Mod metadata + configurable parameters
-├── init.rhai         # Executed once on load
-├── tick_start.rhai   # Executed at start of each tick
-├── tick_end.rhai     # Executed at end of each tick
+├── src/lib.rs        # `impl Plugin` entry point
 └── README.md
 ```
 
@@ -36,13 +35,8 @@ Or in `world.toml`:
 
 ## Engine API
 
-Mods interact with the engine through the `actions` interface:
-
-- `actions.deduct_resource(player_id, resource, amount)`
-- `actions.add_resource(player_id, resource, amount)`
-- `actions.spawn_npc(room_id, npc_type, position)`
-- `actions.log_info(msg)` / `actions.log_warn(msg)` / `actions.log_error(msg)`
-- `actions.emit_event(event_type, data)`
+Mods are statically compiled Bevy Plugin crates. Enable this mod with the
+`mod_empire_upkeep` Cargo feature, or with `vanilla_mods`.
 
 ## Publishing
 
