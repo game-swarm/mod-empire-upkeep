@@ -1,39 +1,8 @@
 use bevy::prelude::*;
 use std::collections::{BTreeMap, BTreeSet};
-
-pub type PlayerId = u32;
-
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct RoomId(pub u32);
-
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Position {
-    pub x: i32,
-    pub y: i32,
-    pub room: RoomId,
-}
-
-#[derive(Component, Debug, Clone)]
-pub struct Drone {
-    pub owner: PlayerId,
-    pub hits: u32,
-    pub age: u32,
-}
-
-#[derive(Component, Debug, Clone)]
-pub struct Structure {
-    pub owner: Option<PlayerId>,
-}
-
-#[derive(Component, Debug, Clone)]
-pub struct Controller {
-    pub owner: Option<PlayerId>,
-    pub level: u8,
-    pub downgrade_timer: u32,
-}
-
-#[derive(Component, Debug, Clone, Copy, Default)]
-pub struct DeathMarker;
+use swarm_engine::components::{
+    Controller, DeathMark, Drone, PlayerId, Position, RoomId, Structure,
+};
 
 #[derive(Resource, Debug, Clone, Default)]
 pub struct PlayerEnergyLedger {
@@ -137,7 +106,8 @@ pub fn empire_upkeep_system(
             ShortfallPolicy::Degrade => {
                 for mut controller in &mut controllers {
                     if controller.owner == Some(player) {
-                        controller.downgrade_timer = controller.downgrade_timer.saturating_sub(deficit);
+                        controller.downgrade_timer =
+                            controller.downgrade_timer.saturating_sub(deficit);
                         if controller.downgrade_timer == 0 && controller.level > 0 {
                             controller.level -= 1;
                         }
@@ -149,7 +119,7 @@ pub fn empire_upkeep_system(
                     if drone.owner == player {
                         let new_hits = drone.hits.saturating_sub(deficit.max(1));
                         if new_hits == 0 {
-                            commands.entity(entity).insert(DeathMarker);
+                            commands.entity(entity).insert(DeathMark);
                         }
                     }
                 }
@@ -162,7 +132,7 @@ pub fn empire_upkeep_system(
                     .collect();
                 owned.sort_by_key(|(age, entity)| (std::cmp::Reverse(*age), entity.to_bits()));
                 if let Some((_, entity)) = owned.first() {
-                    commands.entity(*entity).insert(DeathMarker);
+                    commands.entity(*entity).insert(DeathMark);
                 }
             }
         }
