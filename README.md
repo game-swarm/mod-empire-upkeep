@@ -1,47 +1,32 @@
-# Swarm Mod: empire-upkeep
+# empire-upkeep
 
-Empire maintenance fee system — per-room upkeep, controller repair, and recycle refund for Swarm
-int
-int
-int
-int
-int
-int
+帝国规模维护费模组。drone 和房间越多，每 tick 消耗越大。
 
-## Directory Structure
+## 职责
 
-```
-mods/empire-upkeep/
-├── Cargo.toml        # Static Bevy Plugin crate
-├── mod.toml          # Mod metadata + configurable parameters
-├── src/lib.rs        # `impl Plugin` entry point
-└── README.md
-```
+- 每 tick 按玩家拥有的 drone 数和房间数计算维护费
+- 计算公式：`cost = drone_count × drone_cost + room_count × room_base + room_count² × room_superlinear`
+- 从玩家 Energy 储备中扣除（通过 Resource Ledger）
+- 资源不足时按 onshortfall 策略处理：degrade（降级 Controller）/ damage（伤害 drone）/ despawn（杀死最旧 drone）
+- 构建 anti-snowball 经济曲线——维护费随帝国规模超线性增长
 
-## Configuration
+## 依赖
 
-See `mod.toml` for all configurable parameters. Server operators can override via:
+- bevy
+- base-economy（通过 Resource Ledger 扣费）
 
-```bash
-swarm mod config empire-upkeep <key> <value>
-```
+## 配置
 
-Or in `world.toml`:
-
+mod.toml:
 ```toml
-[mods.empire-upkeep.config]
-# key = value
+[config]
+drone_cost = { type = "u32", default = 2, min = 0, max = 100 }
+room_base = { type = "u32", default = 10, min = 0, max = 1000 }
+room_superlinear = { type = "fixed<u32,4>", default = 1, min = 0, max = 100 }
+onshortfall = { type = "enum", default = "degrade", values = ["degrade", "damage", "despawn"] }
 ```
 
-## Engine API
+## 资源
 
-Mods are statically compiled Bevy Plugin crates. Enable this mod with the
-`mod_empire_upkeep` Cargo feature, or with `vanilla_mods`.
-
-## Publishing
-
-```bash
-git tag v0.1.0
-git push --tags
-swarm mod pack
-```
+- 维护费从玩家 Energy 储备中扣除
+- 短fall 处理通过 Entity 操作（降级、伤害、杀死）
