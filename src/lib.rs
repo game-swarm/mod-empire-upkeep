@@ -138,3 +138,24 @@ pub fn empire_upkeep_system(
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_upkeep_policy_degrades_on_shortfall() {
+        let config = EmpireUpkeepConfig::default();
+
+        assert_eq!(config.drone_cost, 2);
+        assert_eq!(config.room_base, 10);
+        assert_eq!(config.room_superlinear, 1);
+        assert_eq!(config.onshortfall, ShortfallPolicy::Degrade);
+    }
+
+    #[test]
+    fn ledgers_start_empty() {
+        assert!(PlayerEnergyLedger::default().balances.is_empty());
+        assert!(UpkeepShortfalls::default().deficits.is_empty());
+    }
+}
