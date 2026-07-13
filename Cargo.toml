@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = "0.19"
-swarm-engine = { path = "../.." }
+bevy = { version = "0.19", default-features = false }
+swarm-engine = { git = "https://github.com/game-swarm/engine.git", rev = "4f9776302d0784e78bc5f04c7e38e28cc6d4c633" }

@@ -30,3 +30,12 @@ onshortfall = { type = "enum", default = "degrade", values = ["degrade", "damage
 
 - 维护费从玩家 Energy 储备中扣除
 - 短fall 处理通过 Entity 操作（降级、伤害、杀死）
+
+## Standalone Development
+
+This repository is consumable as an independent Cargo crate. It pins `swarm-engine` from `https://github.com/game-swarm/engine.git` at rev `4f9776302d0784e78bc5f04c7e38e28cc6d4c633`; no sibling checkout layout is required.
+
+```sh
+cargo check
+cargo test
+```
