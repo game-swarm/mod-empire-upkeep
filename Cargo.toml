@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 bevy = { version = "0.19", default-features = false }
-swarm-engine = { git = "https://github.com/game-swarm/engine.git", rev = "fc1286401cdea0e6e4a4e3aef931e50b35dcc6e0" }
+swarm-engine = { git = "https://github.com/game-swarm/engine.git", rev = "4099ae2536d46fd2113c750fdaeae690e0f49fcb" }
