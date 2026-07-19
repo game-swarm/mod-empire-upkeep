@@ -1,8 +1,11 @@
 use bevy::prelude::*;
 use std::collections::{BTreeMap, BTreeSet};
-use swarm_engine::components::{
-    Controller, DeathMark, Drone, PlayerId, Position, RoomId, Structure,
+use swarm_engine_api::prelude::{
+    API_VERSION, ConfigFieldDescriptor, ConfigValidator, ConfigValueType,
+    DESCRIPTOR_SCHEMA_VERSION, PlayerId, PluginDescriptor, RoomId, SystemDescriptor, TickPhase,
 };
+use swarm_engine_plugin_sdk::prelude::{Controller, DeathMark, Drone, Position, Structure};
+use swarm_engine_plugin_sdk::traits::SwarmPlugin;
 
 #[derive(Resource, Debug, Clone, Default)]
 pub struct PlayerEnergyLedger {
@@ -49,6 +52,115 @@ impl Plugin for EmpireUpkeepModPlugin {
             .init_resource::<PlayerEnergyLedger>()
             .init_resource::<UpkeepShortfalls>()
             .add_systems(Update, empire_upkeep_system);
+    }
+}
+
+impl SwarmPlugin for EmpireUpkeepModPlugin {
+    fn descriptor() -> PluginDescriptor {
+        PluginDescriptor {
+            id: "empire-upkeep".to_string(),
+            version: "0.1.0".to_string(),
+            api_version: API_VERSION.to_string(),
+            dependencies: Vec::new(),
+            config: vec![
+                config_field("base_upkeep", ConfigValueType::U32, 50_u32.into(), None),
+                config_field(
+                    "room_soft_cap",
+                    ConfigValueType::U32,
+                    10_u32.into(),
+                    Some(ConfigValidator::Positive),
+                ),
+                config_field(
+                    "controller_passive_income",
+                    ConfigValueType::U32,
+                    40_u32.into(),
+                    None,
+                ),
+                config_field(
+                    "controller_passive_income_rcl_bonus",
+                    ConfigValueType::U32,
+                    5_u32.into(),
+                    None,
+                ),
+                config_field(
+                    "resource",
+                    ConfigValueType::String,
+                    "Energy".into(),
+                    Some(ConfigValidator::NonEmptyString),
+                ),
+                config_field(
+                    "repair_cap",
+                    ConfigValueType::BasisPoints,
+                    3_500_u32.into(),
+                    Some(ConfigValidator::BasisPoints),
+                ),
+                config_field(
+                    "distance_decay_bp",
+                    ConfigValueType::BasisPoints,
+                    500_u32.into(),
+                    Some(ConfigValidator::BasisPoints),
+                ),
+                config_field(
+                    "recycle_refund_base",
+                    ConfigValueType::BasisPoints,
+                    5_000_u32.into(),
+                    Some(ConfigValidator::BasisPoints),
+                ),
+                config_field(
+                    "recycle_refund_min",
+                    ConfigValueType::BasisPoints,
+                    1_000_u32.into(),
+                    Some(ConfigValidator::BasisPoints),
+                ),
+                config_field(
+                    "tutorial_recycle_refund_full_ticks",
+                    ConfigValueType::U64,
+                    500_u64.into(),
+                    None,
+                ),
+            ],
+            systems: vec![SystemDescriptor {
+                system_id: "empire-upkeep.update".to_string(),
+                version: "0.1.0".to_string(),
+                phase: TickPhase::Update,
+                order: 0,
+                reads: vec![
+                    "EmpireUpkeepConfig".to_string(),
+                    "PlayerEnergyLedger".to_string(),
+                    "Drone".to_string(),
+                    "Position".to_string(),
+                    "Structure".to_string(),
+                    "Controller".to_string(),
+                ],
+                writes: vec![
+                    "PlayerEnergyLedger".to_string(),
+                    "UpkeepShortfalls".to_string(),
+                    "Controller".to_string(),
+                    "DeathMark".to_string(),
+                    "EntityLifecycle".to_string(),
+                ],
+                produces_buffers: Vec::new(),
+                consumes_buffers: Vec::new(),
+                deterministic_iteration: vec!["PlayerId".to_string()],
+            }],
+            actions: Vec::new(),
+            descriptor_schema_version: DESCRIPTOR_SCHEMA_VERSION.to_string(),
+        }
+    }
+}
+
+fn config_field(
+    key: &str,
+    value_type: ConfigValueType,
+    default: serde_json::Value,
+    validator: Option<ConfigValidator>,
+) -> ConfigFieldDescriptor {
+    ConfigFieldDescriptor {
+        key: key.to_string(),
+        value_type,
+        default,
+        required: false,
+        validator,
     }
 }
 
@@ -157,5 +269,34 @@ mod tests {
     fn ledgers_start_empty() {
         assert!(PlayerEnergyLedger::default().balances.is_empty());
         assert!(UpkeepShortfalls::default().deficits.is_empty());
+    }
+
+    #[test]
+    fn descriptor_is_valid_and_identifies_empire_upkeep() {
+        let descriptor = EmpireUpkeepModPlugin::descriptor();
+        swarm_engine_api::validation::assert_valid_descriptor(&descriptor);
+        assert_eq!(descriptor.id, "empire-upkeep");
+        assert_eq!(descriptor.config.len(), 10);
+        assert_eq!(descriptor.systems.len(), 1);
+        assert_eq!(
+            descriptor
+                .config
+                .iter()
+                .map(|field| field.key.as_str())
+                .collect::<Vec<_>>(),
+            [
+                "base_upkeep",
+                "room_soft_cap",
+                "controller_passive_income",
+                "controller_passive_income_rcl_bonus",
+                "resource",
+                "repair_cap",
+                "distance_decay_bp",
+                "recycle_refund_base",
+                "recycle_refund_min",
+                "tutorial_recycle_refund_full_ticks",
+            ]
+        );
+        assert!(descriptor.dependencies.is_empty());
     }
 }

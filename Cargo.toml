@@ -5,4 +5,6 @@ edition = "2024"
 
 [dependencies]
 bevy = { version = "0.19", default-features = false }
-swarm-engine = { git = "https://github.com/game-swarm/engine.git", rev = "4099ae2536d46fd2113c750fdaeae690e0f49fcb" }
+serde_json = "1"
+swarm-engine-api = { path = "../../engine-api/crates/swarm-engine-api", version = "=0.1.0" }
+swarm-engine-plugin-sdk = { path = "../../engine-api/crates/swarm-engine-plugin-sdk", version = "=0.1.0" }
