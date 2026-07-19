@@ -2,9 +2,8 @@
 name = "swarm-mod-empire-upkeep"
 version = "0.1.0"
 edition = "2024"
-
 [dependencies]
 bevy = { version = "0.19", default-features = false }
 serde_json = "1"
-swarm-engine-api = { path = "../../engine-api/crates/swarm-engine-api", version = "=0.1.0" }
-swarm-engine-plugin-sdk = { path = "../../engine-api/crates/swarm-engine-plugin-sdk", version = "=0.1.0" }
+swarm-engine-api = { git = "https://github.com/game-swarm/engine-api.git", tag = "v0.1.0", version = "=0.1.0" }
+swarm-engine-plugin-sdk = { git = "https://github.com/game-swarm/engine-api.git", tag = "v0.1.0", version = "=0.1.0" }
