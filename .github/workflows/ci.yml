@@ -4,13 +4,27 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out mod
+        uses: actions/checkout@v7
+        with:
+          path: mods/empire-upkeep
+      - name: Check out engine API v0.1.0
+        uses: actions/checkout@v7
+        with:
+          repository: game-swarm/engine-api
+          ref: ec9db43db3893f154eefded5e5995b23ac9aecb4
+          path: engine-api
       - uses: dtolnay/rust-toolchain@stable
       - name: Check
+        working-directory: mods/empire-upkeep
         run: cargo check
       - name: Test
+        working-directory: mods/empire-upkeep
         run: cargo test
