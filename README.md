@@ -41,16 +41,11 @@ tutorial_recycle_refund_full_ticks = { type = "u64", default = 500 }
 
 ## Standalone Development
 
-This crate depends on `swarm-engine-api` and `swarm-engine-plugin-sdk` version `0.1.0`. Until those crates are published to a registry, place the API repository beside `mods/` so the paths in `Cargo.toml` resolve:
+This crate depends on `swarm-engine-api` and `swarm-engine-plugin-sdk` at the exact `0.1.0` release from the `v0.1.0` tag in the `game-swarm/engine-api` repository. Cargo fetches these dependencies directly; no sibling API checkout is required.
 
 ```sh
-mkdir -p swarm/mods
-git clone <this-mod-repository-url> swarm/mods/empire-upkeep
-# Fetch the reviewed API/SDK v0.1.0 source:
-git clone --branch v0.1.0 https://github.com/game-swarm/engine-api swarm/engine-api
-cd swarm/mods/empire-upkeep
 cargo check
 cargo test
 ```
 
-To adopt a later API/SDK release, update both exact versions in `Cargo.toml` and the immutable API commit in `.github/workflows/ci.yml` together.
+To adopt a later API/SDK release, update both exact versions and the Git tag in `Cargo.toml` together.
