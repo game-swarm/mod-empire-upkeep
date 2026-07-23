@@ -1172,7 +1172,7 @@ checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
 [[package]]
 name = "swarm-engine-api"
 version = "0.1.0"
-source = "git+https://github.com/game-swarm/engine-api.git?tag=v0.1.0#ec9db43db3893f154eefded5e5995b23ac9aecb4"
+source = "git+https://github.com/game-swarm/engine-api.git?rev=d29a8f36b6d54ce6dfb5fb81985731110f7c48c8#d29a8f36b6d54ce6dfb5fb81985731110f7c48c8"
 dependencies = [
  "blake3",
  "schemars",
@@ -1185,7 +1185,7 @@ dependencies = [
 [[package]]
 name = "swarm-engine-plugin-sdk"
 version = "0.1.0"
-source = "git+https://github.com/game-swarm/engine-api.git?tag=v0.1.0#ec9db43db3893f154eefded5e5995b23ac9aecb4"
+source = "git+https://github.com/game-swarm/engine-api.git?rev=d29a8f36b6d54ce6dfb5fb81985731110f7c48c8#d29a8f36b6d54ce6dfb5fb81985731110f7c48c8"
 dependencies = [
  "bevy",
  "blake3",
