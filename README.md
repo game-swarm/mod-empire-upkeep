@@ -17,7 +17,7 @@
 
 ## 配置
 
-以下 `mod.toml` 配置是 Engine 集成契约：strict mod control plane 将 `mods.lock` 基础值解码到权威 `WorldConfig.empire_upkeep`，显式 `world.toml` 字段优先。独立 crate 的 `EmpireUpkeepConfig` 与 `PlayerEnergyLedger` 用于隔离运行，不冒充 Engine Resource Ledger。
+以下 `mod.toml` 配置是 Engine 集成契约：strict control plane 将 `world.toml [mods.empire-upkeep]` values/defaults 解码到权威 `WorldConfig.empire_upkeep` 并写入 replay identity；`mods.lock` 不保存 gameplay config。native register 仍安装原始 plugin，canonical 10-field config 不配置 mod-local `EmpireUpkeepConfig`。独立 crate 的 config/ledger 不冒充 Engine Resource Ledger。
 
 mod.toml:
 ```toml
@@ -41,11 +41,11 @@ tutorial_recycle_refund_full_ticks = { type = "u64", default = 500 }
 
 ## Standalone Development
 
-This crate depends on `swarm-engine-api` and `swarm-engine-plugin-sdk` at the exact `0.1.0` release from the `v0.1.0` tag in the `game-swarm/engine-api` repository. Cargo fetches these dependencies directly; no sibling API checkout is required.
+This crate pins `swarm-engine-api` and `swarm-engine-plugin-sdk` to canonical source `https://github.com/game-swarm/engine-api.git`, exact version `0.1.0`, and identical full revision `0d97444af0c8f8c563bbe58837a4fdf8753630cf`. Cargo fetches both crates directly; no sibling API checkout is required.
 
 ```sh
 cargo check
 cargo test
 ```
 
-To adopt a later API/SDK release, update both exact versions and the Git tag in `Cargo.toml` together.
+To adopt a later API/SDK release, update both canonical URLs, both exact versions, and both full Git revisions in `Cargo.toml` together, then regenerate `Cargo.lock` and verify both packages resolve to the same commit.
