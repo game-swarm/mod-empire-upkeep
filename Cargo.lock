@@ -1172,7 +1172,7 @@ checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
 [[package]]
 name = "swarm-engine-api"
 version = "0.1.0"
-source = "git+https://github.com/game-swarm/engine-api.git?rev=d29a8f36b6d54ce6dfb5fb81985731110f7c48c8#d29a8f36b6d54ce6dfb5fb81985731110f7c48c8"
+source = "git+https://github.com/game-swarm/engine-api.git?rev=0d97444af0c8f8c563bbe58837a4fdf8753630cf#0d97444af0c8f8c563bbe58837a4fdf8753630cf"
 dependencies = [
  "blake3",
  "schemars",
@@ -1185,7 +1185,7 @@ dependencies = [
 [[package]]
 name = "swarm-engine-plugin-sdk"
 version = "0.1.0"
-source = "git+https://github.com/game-swarm/engine-api.git?rev=d29a8f36b6d54ce6dfb5fb81985731110f7c48c8#d29a8f36b6d54ce6dfb5fb81985731110f7c48c8"
+source = "git+https://github.com/game-swarm/engine-api.git?rev=0d97444af0c8f8c563bbe58837a4fdf8753630cf#0d97444af0c8f8c563bbe58837a4fdf8753630cf"
 dependencies = [
  "bevy",
  "blake3",
@@ -1200,6 +1200,7 @@ name = "swarm-mod-empire-upkeep"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "serde",
  "serde_json",
  "swarm-engine-api",
  "swarm-engine-plugin-sdk",
