@@ -1,10 +1,14 @@
 use bevy::prelude::*;
+use serde::Deserialize;
 use std::collections::{BTreeMap, BTreeSet};
 use swarm_engine_api::prelude::{
     API_VERSION, ConfigFieldDescriptor, ConfigValidator, ConfigValueType,
     DESCRIPTOR_SCHEMA_VERSION, PlayerId, PluginDescriptor, RoomId, SystemDescriptor, TickPhase,
 };
-use swarm_engine_plugin_sdk::prelude::{Controller, DeathMark, Drone, Position, Structure};
+use swarm_engine_plugin_sdk::prelude::{
+    Controller, DeathMark, Drone, NativeModRegisterContext, NativeModRegisterError, Position,
+    Structure,
+};
 use swarm_engine_plugin_sdk::traits::SwarmPlugin;
 
 #[derive(Resource, Debug, Clone, Default)]
@@ -147,6 +151,37 @@ impl SwarmPlugin for EmpireUpkeepModPlugin {
             descriptor_schema_version: DESCRIPTOR_SCHEMA_VERSION.to_string(),
         }
     }
+}
+
+#[derive(Debug, Deserialize)]
+struct EmpireUpkeepNativeConfig {
+    base_upkeep: u32,
+    room_soft_cap: u32,
+    controller_passive_income: u32,
+    controller_passive_income_rcl_bonus: u32,
+    resource: String,
+    repair_cap: u32,
+    distance_decay_bp: u32,
+    recycle_refund_base: u32,
+    recycle_refund_min: u32,
+    tutorial_recycle_refund_full_ticks: u64,
+}
+
+pub fn register(context: &mut NativeModRegisterContext<'_>) -> Result<(), NativeModRegisterError> {
+    let config = context.decode_config::<EmpireUpkeepNativeConfig>()?;
+    let _ignored_canonical_config = (
+        config.base_upkeep,
+        config.room_soft_cap,
+        config.controller_passive_income,
+        config.controller_passive_income_rcl_bonus,
+        config.resource,
+        config.repair_cap,
+        config.distance_decay_bp,
+        config.recycle_refund_base,
+        config.recycle_refund_min,
+        config.tutorial_recycle_refund_full_ticks,
+    );
+    context.install(EmpireUpkeepModPlugin)
 }
 
 fn config_field(
